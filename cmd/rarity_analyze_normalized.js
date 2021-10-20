@@ -20,9 +20,9 @@ if (!fs.existsSync(databasePath)) {
 const db = new Database(databasePath);
 
 if (mode != 'force') {
-    let checkTable = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='normalized_punk_scores'").get();
+    let checkTable = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='normalized_dirtypantie_scores'").get();
     if (checkTable) {
-        if (checkTable.name == 'normalized_punk_scores') {
+        if (checkTable.name == 'normalized_dirtypantie_scores') {
             console.log("Database exist.");
             return;
         }
@@ -30,11 +30,11 @@ if (mode != 'force') {
 }
 
 let allTraitTypes = db.prepare('SELECT trait_types.* FROM trait_types').all();
-let allTraitTypeCount = db.prepare('SELECT trait_type_id, COUNT(trait_type_id) as trait_type_count, SUM(punk_count) trait_type_sum FROM trait_detail_types GROUP BY trait_type_id').all();
-let traitCountNum = db.prepare('SELECT COUNT(*) as trait_count_num FROM punk_trait_counts').get().trait_count_num;
-let traitCounts = db.prepare('SELECT * FROM punk_trait_counts').all();
-let totalSupply = db.prepare('SELECT COUNT(punks.id) as punk_total FROM punks').get().punk_total;
-let allTraits = db.prepare('SELECT trait_types.trait_type, trait_detail_types.trait_detail_type, trait_detail_types.punk_count, trait_detail_types.trait_type_id, trait_detail_types.id trait_detail_type_id  FROM trait_detail_types INNER JOIN trait_types ON (trait_detail_types.trait_type_id = trait_types.id) ORDER BY trait_types.trait_type, trait_detail_types.trait_detail_type').all();
+let allTraitTypeCount = db.prepare('SELECT trait_type_id, COUNT(trait_type_id) as trait_type_count, SUM(dirtypantie_count) trait_type_sum FROM trait_detail_types GROUP BY trait_type_id').all();
+let traitCountNum = db.prepare('SELECT COUNT(*) as trait_count_num FROM dirtypantie_trait_counts').get().trait_count_num;
+let traitCounts = db.prepare('SELECT * FROM dirtypantie_trait_counts').all();
+let totalSupply = db.prepare('SELECT COUNT(dirtypantie.id) as dirtypantie_total FROM dirtypantie').get().dirtypantie_total;
+let allTraits = db.prepare('SELECT trait_types.trait_type, trait_detail_types.trait_detail_type, trait_detail_types.dirtypantie_count, trait_detail_types.trait_type_id, trait_detail_types.id trait_detail_type_id  FROM trait_detail_types INNER JOIN trait_types ON (trait_detail_types.trait_type_id = trait_types.id) ORDER BY trait_types.trait_type, trait_detail_types.trait_detail_type').all();
 
 let traitTypeCountSum = 0 + traitCountNum;
 let traitTypeNum = 0 + 1;
@@ -69,12 +69,12 @@ let meanValueCount = traitTypeCountSum/traitTypeNum;
 
 allTraits.forEach(detailTrait => {
     traitTypeRarityScoreSum[detailTrait.trait_type_id] = traitTypeRarityScoreSum[detailTrait.trait_type_id] +
-        totalSupply/detailTrait.punk_count;
+        totalSupply/detailTrait.dirtypantie_count;
 });
 traitTypeRarityScoreSum[allTraitTypes.length] = 0;
 traitCounts.forEach(traitCount => {
     traitTypeRarityScoreSum[allTraitTypes.length] = traitTypeRarityScoreSum[allTraitTypes.length] + 
-        totalSupply/traitCount.punk_count;
+        totalSupply/traitCount.dirtypantie_count;
 }); 
 
 let traitTypeMeanRarity = [];
@@ -93,30 +93,30 @@ console.log(meanValueCount);
 console.log(traitTypeMeanRarity);
 console.log(meanRarity);
 
-let createScoreTableStmt = "CREATE TABLE normalized_punk_scores ( id INT, punk_id INT, ";
-let insertPunkScoreStmt = "INSERT INTO normalized_punk_scores VALUES (:id, :punk_id, ";
+let createScoreTableStmt = "CREATE TABLE normalized_dirtypantie_scores ( id INT, dirtypantie_id INT, ";
+let insertDirtypantieScoreStmt = "INSERT INTO normalized_dirtypantie_scores VALUES (:id, :dirtypantie_id, ";
 
 allTraitTypes.forEach(traitType => {
     createScoreTableStmt = createScoreTableStmt + "trait_type_" + traitType.id + "_percentile DOUBLE, trait_type_" + traitType.id + "_rarity DOUBLE, trait_type_" + traitType.id + "_value TEXT, ";
-    insertPunkScoreStmt = insertPunkScoreStmt + ":trait_type_" + traitType.id + "_percentile, :trait_type_" + traitType.id + "_rarity, :trait_type_" + traitType.id + "_value, ";
+    insertDirtypantieScoreStmt = insertDirtypantieScoreStmt + ":trait_type_" + traitType.id + "_percentile, :trait_type_" + traitType.id + "_rarity, :trait_type_" + traitType.id + "_value, ";
 });
 
 createScoreTableStmt = createScoreTableStmt + "trait_count INT,  trait_count_percentile DOUBLE, trait_count_rarity DOUBLE, rarity_sum DOUBLE, rarity_rank INT)";
-insertPunkScoreStmt = insertPunkScoreStmt + ":trait_count,  :trait_count_percentile, :trait_count_rarity, :rarity_sum, :rarity_rank)";
+insertDirtypantieScoreStmt = insertDirtypantieScoreStmt + ":trait_count,  :trait_count_percentile, :trait_count_rarity, :rarity_sum, :rarity_rank)";
 
 db.exec(createScoreTableStmt);
-insertPunkScoreStmt = db.prepare(insertPunkScoreStmt);
+insertDirtypantieScoreStmt = db.prepare(insertDirtypantieScoreStmt);
 
-let punkScores = db.prepare('SELECT * FROM punk_scores').all();
+let dirtypantieScores = db.prepare('SELECT * FROM dirtypantie_scores').all();
 
-punkScores.forEach(punkScore => {
+dirtypantieScores.forEach(dirtypantieScore => {
 
-    console.log("Normalize punk: #" + punkScore.id);
+    console.log("Normalize dirtypantie: #" + dirtypantieScore.id);
 
     let raritySum = 0;
-    let normalizedPunkScore = {};
-    normalizedPunkScore['id'] = punkScore.id;
-    normalizedPunkScore['punk_id'] = punkScore.punk_id;
+    let normalizedDirtypantieScore = {};
+    normalizedDirtypantieScore['id'] = dirtypantieScore.id;
+    normalizedDirtypantieScore['dirtypantie_id'] = dirtypantieScore.dirtypantie_id;
     
     for (let i = 0; i < traitTypeMeanRarity.length; i++) {
         let a = 0;
@@ -134,7 +134,7 @@ punkScores.forEach(punkScore => {
         }
 
         let c = traitTypeValueCount[i] >= meanValueCount ? 1 - b : 1 + b;
-        let r = (i == traitTypeMeanRarity.length - 1) ? punkScore['trait_count_rarity'] : punkScore['trait_type_' + i + '_rarity'];
+        let r = (i == traitTypeMeanRarity.length - 1) ? dirtypantieScore['trait_count_rarity'] : dirtypantieScore['trait_type_' + i + '_rarity'];
         let rarity_score_normalized = 0;
 
         if (a >= b && ((traitTypeMeanRarity[i] > meanRarity && traitTypeValueCount[i] > meanValueCount) || (traitTypeMeanRarity[i] < meanRarity && traitTypeValueCount[i] < meanValueCount))) {
@@ -148,41 +148,41 @@ punkScores.forEach(punkScore => {
         //console.log(rarity_score_normalized);
 
         if ((i == traitTypeMeanRarity.length - 1)) {
-            normalizedPunkScore['trait_count'] = punkScore['trait_count'];
-            normalizedPunkScore['trait_count_percentile'] = punkScore['trait_count_percentile'];
-            normalizedPunkScore['trait_count_rarity'] = rarity_score_normalized;
+            normalizedDirtypantieScore['trait_count'] = dirtypantieScore['trait_count'];
+            normalizedDirtypantieScore['trait_count_percentile'] = dirtypantieScore['trait_count_percentile'];
+            normalizedDirtypantieScore['trait_count_rarity'] = rarity_score_normalized;
             raritySum = raritySum + rarity_score_normalized;
-            normalizedPunkScore['rarity_sum'] = raritySum;
-            normalizedPunkScore['rarity_rank'] = 0;
+            normalizedDirtypantieScore['rarity_sum'] = raritySum;
+            normalizedDirtypantieScore['rarity_rank'] = 0;
         } else {
-            if (!ignoreTraits.includes(punkScore['trait_type_' + i + '_value'].toLowerCase())) {
-                normalizedPunkScore['trait_type_' + i + '_percentile'] = punkScore['trait_type_' + i + '_percentile'];
-                normalizedPunkScore['trait_type_' + i + '_rarity'] = rarity_score_normalized;
+            if (!ignoreTraits.includes(dirtypantieScore['trait_type_' + i + '_value'].toLowerCase())) {
+                normalizedDirtypantieScore['trait_type_' + i + '_percentile'] = dirtypantieScore['trait_type_' + i + '_percentile'];
+                normalizedDirtypantieScore['trait_type_' + i + '_rarity'] = rarity_score_normalized;
                 raritySum = raritySum + rarity_score_normalized;
             } else {
-                normalizedPunkScore['trait_type_' + i + '_percentile'] = 0;
-                normalizedPunkScore['trait_type_' + i + '_rarity'] = 0;
+                normalizedDirtypantieScore['trait_type_' + i + '_percentile'] = 0;
+                normalizedDirtypantieScore['trait_type_' + i + '_rarity'] = 0;
                 raritySum = raritySum + 0;
             }
-            normalizedPunkScore['trait_type_' + i + '_value'] = punkScore['trait_type_' + i + '_value'];
+            normalizedDirtypantieScore['trait_type_' + i + '_value'] = dirtypantieScore['trait_type_' + i + '_value'];
         }
     }
 
-    //console.log(normalizedPunkScore);
+    //console.log(normalizedDirtypantieScore);
 
-    insertPunkScoreStmt.run(normalizedPunkScore);
+    insertDirtypantieScoreStmt.run(normalizedDirtypantieScore);
 });
 
-const punkScoreStmt = db.prepare('SELECT rarity_sum FROM normalized_punk_scores WHERE punk_id = ?');
-const punkRankStmt = db.prepare('SELECT COUNT(id) as higherRank FROM normalized_punk_scores WHERE rarity_sum > ?');
-let updatPunkRankStmt = db.prepare("UPDATE normalized_punk_scores SET rarity_rank = :rarity_rank WHERE punk_id = :punk_id");
+const dirtypantieScoreStmt = db.prepare('SELECT rarity_sum FROM normalized_dirtypantie_scores WHERE dirtypantie_id = ?');
+const dirtypantieRankStmt = db.prepare('SELECT COUNT(id) as higherRank FROM normalized_dirtypantie_scores WHERE rarity_sum > ?');
+let updatDirtypantieRankStmt = db.prepare("UPDATE normalized_dirtypantie_scores SET rarity_rank = :rarity_rank WHERE dirtypantie_id = :dirtypantie_id");
 
-punkScores.forEach(punkScore => {
-    console.log("Normalized ranking punk: #" + punkScore.punk_id);
-    let normalizedPunkScore = punkScoreStmt.get(punkScore.punk_id);
-    let punkRank = punkRankStmt.get(normalizedPunkScore.rarity_sum);
-    updatPunkRankStmt.run({
-        rarity_rank: punkRank.higherRank+1,
-        punk_id: punkScore.punk_id
+dirtypantieScores.forEach(dirtypantieScore => {
+    console.log("Normalized ranking dirtypantie: #" + dirtypantieScore.dirtypantie_id);
+    let normalizedDirtypantieScore = dirtypantieScoreStmt.get(dirtypantieScore.dirtypantie_id);
+    let dirtypantieRank = dirtypantieRankStmt.get(normalizedDirtypantieScore.rarity_sum);
+    updatDirtypantieRankStmt.run({
+        rarity_rank: dirtypantieRank.higherRank+1,
+        dirtypantie_id: dirtypantieScore.dirtypantie_id
     });
 });
