@@ -12,31 +12,31 @@ if (!fs.existsSync(databasePath)) {
 
 const db = new Database(databasePath);
 
-exports.punk = function (punk, scoreTable) {
-  let punkId = punk.id;
-  let punkTraits = db.prepare('SELECT punk_traits.trait_type_id, trait_types.trait_type, punk_traits.value  FROM punk_traits INNER JOIN trait_types ON (punk_traits.trait_type_id = trait_types.id) WHERE punk_traits.punk_id = ?').all(punkId);
-  let punkScore = db.prepare('SELECT '+scoreTable+'.* FROM '+scoreTable+' WHERE '+scoreTable+'.punk_id = ?').get(punkId);
+exports.dirtypantie = function (dirtypantie, scoreTable) {
+  let dirtypantieId = dirtypantie.id;
+  let dirtypantieTraits = db.prepare('SELECT dirtypantie_traits.trait_type_id, trait_types.trait_type, dirtypantie_traits.value  FROM dirtypantie_traits INNER JOIN trait_types ON (dirtypantie_traits.trait_type_id = trait_types.id) WHERE dirtypantie_traits.dirtypantie_id = ?').all(dirtypantieId);
+  let dirtypantieScore = db.prepare('SELECT '+scoreTable+'.* FROM '+scoreTable+' WHERE '+scoreTable+'.dirtypantie_id = ?').get(dirtypantieId);
   let allTraitTypes = db.prepare('SELECT trait_types.* FROM trait_types').all();
   
-  let punkTraitsData = [];
-  let punkTraitIDs = [];
-  punkTraits.forEach(punkTrait => {
-    let percentile = punkScore['trait_type_'+punkTrait.trait_type_id+'_percentile'];
-    let rarity_score = punkScore['trait_type_'+punkTrait.trait_type_id+'_rarity'];
-    punkTraitsData.push({
-      trait_type: punkTrait.trait_type,
-      value: punkTrait.value,
+  let dirtypantieTraitsData = [];
+  let dirtypantieTraitIDs = [];
+  dirtypantieTraits.forEach(dirtypantieTrait => {
+    let percentile = dirtypantieScore['trait_type_'+dirtypantieTrait.trait_type_id+'_percentile'];
+    let rarity_score = dirtypantieScore['trait_type_'+dirtypantieTrait.trait_type_id+'_rarity'];
+    dirtypantieTraitsData.push({
+      trait_type: dirtypantieTrait.trait_type,
+      value: dirtypantieTrait.value,
       percentile: percentile,
       rarity_score: rarity_score,
     });
-    punkTraitIDs.push(punkTrait.trait_type_id);
+    dirtypantieTraitIDs.push(dirtypantieTrait.trait_type_id);
   });
 
   let missingTraitsData = [];
   allTraitTypes.forEach(traitType => {
-    if (!punkTraitIDs.includes(traitType.id)) {
-      let percentile = punkScore['trait_type_'+traitType.id+'_percentile'];
-      let rarity_score = punkScore['trait_type_'+traitType.id+'_rarity'];
+    if (!dirtypantieTraitIDs.includes(traitType.id)) {
+      let percentile = dirtypantieScore['trait_type_'+traitType.id+'_percentile'];
+      let rarity_score = dirtypantieScore['trait_type_'+traitType.id+'_rarity'];
       missingTraitsData.push({
         trait_type: traitType.trait_type,
         percentile: percentile,
@@ -46,17 +46,17 @@ exports.punk = function (punk, scoreTable) {
   });
 
   return {
-    id: punk.id,
-    name: punk.name,
-    image: punk.image,
-    attributes: punkTraitsData,
+    id: dirtypantie.id,
+    name: dirtypantie.name,
+    image: dirtypantie.image,
+    attributes: dirtypantieTraitsData,
     missing_traits: missingTraitsData,
     trait_count: {
-      count: punkScore.trait_count,
-      percentile: punkScore.trait_count_percentile,
-      rarity_score: punkScore.trait_count_rarity
+      count: dirtypantieScore.trait_count,
+      percentile: dirtypantieScore.trait_count_percentile,
+      rarity_score: dirtypantieScore.trait_count_rarity
     },
-    rarity_score: punkScore.rarity_sum,
-    rarity_rank: punkScore.rarity_rank
+    rarity_score: dirtypantieScore.rarity_sum,
+    rarity_rank: dirtypantieScore.rarity_rank
   };
 };

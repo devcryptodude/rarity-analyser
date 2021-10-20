@@ -7,7 +7,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var punksRouter = require('./routes/punks');
+var dirtypantieRouter = require('./routes/dirtypantie');
 
 var app = express();
 
@@ -39,7 +39,7 @@ app.locals.item_path_name = config.item_path_name;
 app.locals.use_wallet = config.use_wallet;
 
 app.use('/', indexRouter);
-app.use('/'+config.item_path_name, punksRouter);
+app.use('/'+config.item_path_name, dirtypantieRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

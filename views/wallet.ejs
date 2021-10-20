@@ -38,11 +38,11 @@
             </div>
           </div>
         </form>
-        <div class="row punks">
-          <% if (!_.isEmpty(punks)) { %>
-            <% punks.forEach(function(punk) { %>
+        <div class="row dirtypantie">
+          <% if (!_.isEmpty(dirtypantie)) { %>
+            <% dirtypantie.forEach(function(dirtypantie) { %>
               <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-5" style="padding-left: 30px; padding-right: 30px;">
-                <%- include('./component/punk', {punk: punk, trait_normalization: useTraitNormalization}); -%>
+                <%- include('./component/dirtypantie', {dirtypantie: dirtypantie, trait_normalization: useTraitNormalization}); -%>
               </div>
             <% }); %>
           <% } else { %>
