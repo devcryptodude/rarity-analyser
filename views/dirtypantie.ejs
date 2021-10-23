@@ -24,9 +24,9 @@
               <div>
                 <h3 class="dirtypantie-rank">Rank #<%= dirtypantie.rarity_rank %></h3>
                 <% if (content_image_is_video) { %>
-                <video class="dirtypantie-avatar" style="<% if (content_image_frame=='rectangle') { %> border-radius: 10px; <% } %>" src="<%= dirtypantie.image_url; %>" alt="<%= dirtypantie.name %>" /></video>
+                <video class="dirtypantie-avatar" style="<% if (content_image_frame=='rectangle') { %> border-radius: 10px; <% } %>" src="<%= dirtypantie.image; %>" alt="<%= dirtypantie.name %>" /></video>
                 <% } else { %>
-                <img class="dirtypantie-avatar" style="<% if (content_image_frame=='rectangle') { %> border-radius: 10px; <% } %>" src="<%= dirtypantie.image_url; %>" alt="<%= dirtypantie.name %>" />
+                <img class="dirtypantie-avatar" style="<% if (content_image_frame=='rectangle') { %> border-radius: 10px; <% } %>" src="<%= dirtypantie.image; %>" alt="<%= dirtypantie.name %>" />
                 <% } %>
                 <div class="dirtypantie-info text-center mt-4">
                   <span><%= dirtypantie.name %></span>
