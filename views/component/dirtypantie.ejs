@@ -13,8 +13,12 @@ if (trait_normalization == 1) {
     <h3 class="dirtypantie-similar-score">Similar Score #<%= dirtypantie.similar.toFixed(2) %></h3>
     <% } %>
 
+    <% if (dirtypantie.image) { %>
+    <img class="dirtypantie-avatar" style="<% if (content_image_frame=='rectangle') { %> border-radius: 10px; <% } %>" src="<%= dirtypantie.image; %>" alt="<%= dirtypantie.name %>" /></img>
+    <% } %>
+
     <% if (content_image_is_video) { %>
-    <video class="dirtypantie-avatar" style="<% if (content_image_frame=='rectangle') { %> border-radius: 10px; <% } %>" src="<%= dirtypantie.image_url; %>" alt="<%= dirtypantie.name %>" /></video>
+    <video class="dirtypantie-avatar" style="<% if (content_image_frame=='rectangle') { %> border-radius: 10px; <% } %>" src="<%= dirtypantie.image; %>" alt="<%= dirtypantie.name %>" /></video>
     <% } %>
 
 
