@@ -1,7 +1,15 @@
 {
+<<<<<<< HEAD
     "name": "Dirtypanties Rarity tool",
     "description": "Rarity is an open source package for easy rarity score calculation with ERC721 NFT metadata collection.",
     "repository": "https://github.com/devcryptodude/rarity-analyser",
     "logo": "https://dirtypanties.xyz/images/1.png",
     "keywords": ["NFT", "ERC721", "rarity", "Dirtypanties"]
+=======
+    "name": "Cool Rarity",
+    "description": "Cool Rarity is an open source package for easy rarity score calculation with ERC721 NFT metadata collection.",
+    "repository": "https://github.com/fukuball/rarity-analyser",
+    "logo": "https://onedaydirtypantie-rarity-tool.herokuapp.com/images/profile.png",
+    "keywords": ["NFT", "ERC721", "rarity", "DirtypantieScape", "OneDayDirtypantie"]
+>>>>>>> 7b1bad8bb719890ae1ef3146987ebf6d7f7abe99
   }
